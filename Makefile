@@ -5,7 +5,7 @@
 #
 # Paths to common dependencies
 #
-export LIBOPENCM3	?= $(wildcard ../libopencm3)
+export LIBOPENCM3	?= $(wildcard ./libopencm3)
 ifeq ($(LIBOPENCM3),)
 $(error Cannot locate libopencm3 - set LIBOPENCM3 to the root of a built version and try again)
 endif
@@ -36,6 +36,7 @@ export COMMON_SRCS	 = bl.c
 # Bootloaders to build
 #
 TARGETS			 = px4fmu_bl px4fmuv2_bl px4flow_bl stm32f4discovery_bl px4io_bl aerocore_bl
+TARGETS				= dragonfly_bl
 
 # px4io_bl px4flow_bl
 
@@ -51,6 +52,9 @@ clean:
 # Pick an interface supported by the Makefile (USB, UART, I2C)
 # Specify the board type.
 #
+
+dragonfly_bl: $(MAKEFILE_LIST)
+	make -f Makefile.f4 TARGET=dragonfly INTERFACE=USB BOARD=DRAGONFLY USBDEVICESTRING="\\\"PX4 BL DRAGONFLY v1.x\\\"" USBPRODUCTID="0x0020"
 
 px4fmu_bl: $(MAKEFILE_LIST)
 	make -f Makefile.f4 TARGET=fmu INTERFACE=USB BOARD=FMU USBDEVICESTRING="\\\"PX4 BL FMU v1.x\\\"" USBPRODUCTID="0x0010"
