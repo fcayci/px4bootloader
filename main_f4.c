@@ -66,6 +66,22 @@ static struct {
     #define BOARD_LED_OFF               gpio_set
 #endif
 
+#ifdef BOARD_STMSTICK
+		#define BOARD_TYPE                  21
+		#define BOARD_FLASH_SECTORS         11
+		#define BOARD_FLASH_SIZE            (1024 * 1024)
+
+		#define OSC_FREQ                    16
+
+		#define BOARD_PIN_LED_ACTIVITY      GPIO0
+		#define BOARD_PIN_LED_BOOTLOADER    GPIO1
+		#define BOARD_PORT_LEDS             GPIOA
+		#define BOARD_CLOCK_LEDS            RCC_AHB1ENR_IOPAEN
+		#define BOARD_LED_ON                gpio_clear
+		#define BOARD_LED_OFF               gpio_set
+#endif
+
+
 #ifdef BOARD_FMU
 # define BOARD_TYPE			5
 # define BOARD_FLASH_SECTORS		11
@@ -301,8 +317,8 @@ board_init(void)
 	/* initialise LEDs */
 	rcc_peripheral_enable_clock(&RCC_AHB1ENR, BOARD_CLOCK_LEDS);
 	gpio_mode_setup(
-		BOARD_PORT_LEDS, 
-		GPIO_MODE_OUTPUT, 
+		BOARD_PORT_LEDS,
+		GPIO_MODE_OUTPUT,
 		GPIO_PUPD_NONE,
 		BOARD_PIN_LED_BOOTLOADER | BOARD_PIN_LED_ACTIVITY);
 	gpio_set_output_options(
@@ -361,7 +377,7 @@ flash_func_write_word(uint32_t address, uint32_t word)
 	flash_program_word(address + APP_LOAD_ADDRESS, word, FLASH_PROGRAM_X32);
 }
 
-uint32_t 
+uint32_t
 flash_func_read_word(uint32_t address)
 {
 	if (address & 3)
@@ -383,7 +399,7 @@ uint32_t
 flash_func_read_sn(uint32_t address)
 {
 	// read a byte out from unique chip ID area
-	// it's 12 bytes, or 3 words. 
+	// it's 12 bytes, or 3 words.
     return *(uint32_t *)(address + UDID_START);
 }
 void
@@ -442,7 +458,7 @@ main(void)
 	/* do board-specific initialisation */
 	board_init();
 
-	/* 
+	/*
 	 * Check the force-bootloader register; if we find the signature there, don't
 	 * try booting.
 	 */
@@ -458,7 +474,7 @@ main(void)
 		 */
 		timeout = 0;
 
-		/* 
+		/*
 		 * Clear the signature so that if someone resets us while we're
 		 * in the bootloader we'll try to boot next time.
 		 */
